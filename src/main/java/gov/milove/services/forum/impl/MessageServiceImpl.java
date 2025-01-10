@@ -5,7 +5,7 @@ import gov.milove.domain.dto.forum.MessageDto;
 import gov.milove.domain.dto.forum.MessageRequestDto;
 import gov.milove.domain.forum.message.ForwardedMessage;
 import gov.milove.domain.forum.message.Message;
-import gov.milove.repositories.jpa.contact.ForwardedMessageRepository;
+import gov.milove.repositories.jpa.forum.ForwardedMessageRepository;
 import gov.milove.repositories.jpa.forum.ChatRepo;
 import gov.milove.repositories.jpa.forum.ForumUserRepo;
 import gov.milove.repositories.jpa.forum.MessageRepo;

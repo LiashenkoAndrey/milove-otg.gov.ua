@@ -12,9 +12,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-//@Configuration
+@Configuration
+@EnableMethodSecurity
 @RequiredArgsConstructor
-//@EnableMethodSecurity
 public class SecurityConfig {
 
     private final AuthenticationErrorHandler authenticationErrorHandler;

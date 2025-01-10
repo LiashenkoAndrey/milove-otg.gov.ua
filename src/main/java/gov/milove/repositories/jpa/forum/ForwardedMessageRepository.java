@@ -1,4 +1,4 @@
-package gov.milove.repositories.jpa.contact;
+package gov.milove.repositories.jpa.forum;
 
 import gov.milove.domain.forum.message.ForwardedMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
