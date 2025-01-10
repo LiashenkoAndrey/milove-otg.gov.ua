@@ -20,7 +20,7 @@ public class AboutCommunityController {
 
     @PutMapping("/protected/aboutCommunity/update")
     public String getUpdatePage(@RequestParam String mainText) {
-        About about =  aboutRepo.findById("663f6e32388652544c7ff08f").orElseThrow(EntityNotFoundException::new);
+        About about = aboutRepo.findById("663f6e32388652544c7ff08f").orElseThrow(EntityNotFoundException::new);
         about.setMainText(mainText);
         aboutRepo.save(about);
         return about.getId();

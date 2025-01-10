@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface INewsDto {
 
+    Long getId();
+
     String getDescription();
 
     LocalDateTime getDateOfPublication();
@@ -22,5 +24,5 @@ public interface INewsDto {
 
     List<NewsImage> getImages();
 
-    Long getId();
+
 }

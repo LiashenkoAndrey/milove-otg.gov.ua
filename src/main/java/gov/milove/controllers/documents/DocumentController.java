@@ -27,7 +27,7 @@ public class DocumentController {
 
     @PutMapping("/protected/document/{id}/update")
     public Long updateDocumentName(@PathVariable Long id,
-                             @NotBlank @RequestParam String name) {
+                                   @NotBlank @RequestParam String name) {
         log.info("update doc = {}, name - {}", id, name);
         Document document = documentRepo.findById(id).orElseThrow(EntityNotFoundException::new);
         document.setTitle(name);
@@ -55,7 +55,7 @@ public class DocumentController {
     }
 
     @GetMapping("/documents/search")
-    public List<DocumentWithGroupDto> searchDocs(@RequestParam(name = "docName") String encodedString)  {
+    public List<DocumentWithGroupDto> searchDocs(@RequestParam(name = "docName") String encodedString) {
         return documentRepo.searchDistinctByNameContainingIgnoreCaseOrTitleContainingIgnoreCase(encodedString, encodedString);
     }
 

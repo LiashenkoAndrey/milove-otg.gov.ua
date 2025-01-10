@@ -1,4 +1,4 @@
-package gov.milove.domain.dto.document.media;
+package gov.milove.repositories.jpa.media;
 
 import gov.milove.domain.media.Banner;
 import org.springframework.data.jpa.repository.JpaRepository;

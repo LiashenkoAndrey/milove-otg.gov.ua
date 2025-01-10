@@ -48,9 +48,6 @@ public class News {
 
     private Long views = 0L;
 
-    @Formula("(select count(*) from news_comment c where c.news_id = id)")
-    private Long commentsAmount;
-
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private NewsType newsType;
 }

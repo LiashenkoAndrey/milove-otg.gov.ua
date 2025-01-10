@@ -1,7 +1,7 @@
 package gov.milove.controllers.media;
 
 import gov.milove.domain.media.LinkBanner;
-import gov.milove.domain.dto.document.media.LinkBannerRepository;
+import gov.milove.repositories.jpa.media.LinkBannerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
