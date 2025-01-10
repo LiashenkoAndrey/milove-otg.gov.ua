@@ -1,10 +1,10 @@
 package gov.milove.controllers.documents;
 
-import gov.milove.domain.Document;
-import gov.milove.domain.dto.DocumentWithGroupDto;
+import gov.milove.domain.document.Document;
+import gov.milove.domain.dto.document.DocumentWithGroupDto;
 import gov.milove.repositories.jpa.document.DocumentRepo;
 import gov.milove.repositories.mongo.MongoDocumentRepo;
-import gov.milove.services.DocumentService;
+import gov.milove.services.document.DocumentService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class DocumentController {
 
     @PutMapping("/protected/document/{id}/update")
     public Long updateDocumentName(@PathVariable Long id,
-                             @NotBlank @RequestParam String name) {
+                                   @NotBlank @RequestParam String name) {
         log.info("update doc = {}, name - {}", id, name);
         Document document = documentRepo.findById(id).orElseThrow(EntityNotFoundException::new);
         document.setTitle(name);
@@ -55,7 +55,7 @@ public class DocumentController {
     }
 
     @GetMapping("/documents/search")
-    public List<DocumentWithGroupDto> searchDocs(@RequestParam(name = "docName") String encodedString)  {
+    public List<DocumentWithGroupDto> searchDocs(@RequestParam(name = "docName") String encodedString) {
         return documentRepo.searchDistinctByNameContainingIgnoreCaseOrTitleContainingIgnoreCase(encodedString, encodedString);
     }
 
