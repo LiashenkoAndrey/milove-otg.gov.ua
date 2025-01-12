@@ -34,18 +34,6 @@ public class DocumentController {
         documentRepo.save(document);
         return id;
     }
-//
-//    @GetMapping("/documents/deleteUnused")
-//    public void delete() {
-//        log.info("Start search");
-//        List<String> documents = documentRepository.findAll().stream().map(Document::getMongoId).toList();
-//        log.info("50%");
-//        List<MongoDocument> mongoDocuments = mongoDocumentRepo.findAll().stream()
-//                .filter(mongoDocument -> !documents.contains(mongoDocument.getId())).toList();
-//        log.info("Not used docs! size = {} {}", mongoDocuments.size(), mongoDocuments);
-//        mongoDocumentRepo.deleteAll(mongoDocuments);
-//        log.info("End search");
-//    }
 
     @DeleteMapping("/protected/document/{id}/delete")
     public Document deleteDocument(@PathVariable Long id) {

@@ -68,7 +68,6 @@ public class Message {
 
 
     @OneToOne(fetch = FetchType.EAGER,  cascade = CascadeType.PERSIST, mappedBy = "forwardedMessage")
-//    @JoinTable(name = "forwarded_message", schema = "forum")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ForwardedMessage forwardedMessage;
 

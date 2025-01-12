@@ -26,9 +26,6 @@ public class PostComment {
     private String text;
 
     private Date createdOn;
-
-//    @ManyToOne
-//    @JoinColumn(name = "post_id")
     private Long post_id;
 
     @ManyToOne

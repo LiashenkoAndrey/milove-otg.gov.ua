@@ -38,9 +38,6 @@ public class AdministrationEmployeeService {
     public void deleteById(Long id) throws AdministrationEmployeeServiceException {
         try {
             AdministrationEmployee employee = repository.findById(id).orElseThrow(EntityNotFoundException::new);
-            if (employee.getImage_id() != null) {
-//                imageService.deleteImageById(employee.getImage_id());
-            }
             repository.deleteById(id);
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -26,17 +26,4 @@ public class AboutCommunityController {
         return about.getId();
     }
 
-//    @PostMapping("/update")
-//    public ResponseEntity<String> updatePage(@RequestParam("main_text") String main_text) {
-//        try {
-//            gov.milove.domain.About about = aboutRepo.findById(1L)
-//                    .orElseThrow(EntityNotFoundException::new);
-//            about.setLast_updated(LocalDateTime.now());
-//            about.setMain_text(main_text);
-//            aboutRepo.save(about);
-//            return ok("Сторінка успішно оновлена!");
-//        } catch (Exception ex) {
-//            return error("Виникли проблеми з оновленням");
-//        }
-//    }
 }

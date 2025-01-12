@@ -49,7 +49,6 @@ public class NewsServiceImpl implements NewsService {
     @Override
     public void update(NewsDtoWithImageAndType news) {
         News saved = newsRepository.findById(news.getId()).orElseThrow(NewsServiceException::new);
-//        imageService.updateImageIfPresent(news.getImage(), saved.getImage_id());
         news.mapToEntity(saved);
         saved.setLast_updated(LocalDateTime.now());
         defineNewsType(news, saved);
