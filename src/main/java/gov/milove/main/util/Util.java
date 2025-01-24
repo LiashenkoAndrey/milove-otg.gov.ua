@@ -22,16 +22,6 @@ public class Util {
     }
 
 
-    public static String encodeUriComponent(String encodedStr) {
-        if (encodedStr == null) return null;
-        try {
-            return URLEncoder.encode(encodedStr.replace("+", "%2B"), "UTF-8")
-                    .replace("%2B", "+");
-        } catch (java.io.UnsupportedEncodingException e) {
-            throw new UtilException(e.getMessage());
-        }
-    }
-
     public static String getFileFormat(String filename) {
         if (filename == null) throw new UtilException("filename is null");
         return filename.substring(filename.lastIndexOf(".") + 1);
