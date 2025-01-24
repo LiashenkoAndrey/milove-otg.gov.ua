@@ -8,8 +8,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement
-@EnableMongoRepositories(basePackages = {"gov.milove.repositories.mongo"})
-@EnableJpaRepositories(basePackages = {"gov.milove.repositories.jpa"})
+@EnableMongoRepositories(basePackages = {
+    "gov.milove.main.repository.mongo",
+    "gov.milove.forum.repository.mongo"}
+)
+@EnableJpaRepositories(basePackages = {
+    "gov.milove.main.repository.jpa",
+    "gov.milove.forum.repository.jpa"}
+)
 public class Runner {
 
     public static void main(String[] args) {
