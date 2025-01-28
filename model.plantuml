@@ -1,0 +1,195 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class About {
+   mainText: String
+   id: String
+   lastUpdated: LocalDateTime
+}
+class AdminMetadata {
+   isDocumentsPageTourCompleted: Boolean
+   isShowModalTourWhenUserOnDocumentsPage: Boolean
+   isShowConfirmWhenDeleteDocument: Boolean
+   userId: String
+}
+class AdministrationEmployee {
+   image_id: String
+   administration_group: AdministrationGroup
+}
+class AdministrationGroup {
+   employee_list: List<AdministrationEmployee>
+   group_list: List<AdministrationGroup>
+   title: String
+   id: Long
+   administration_group: AdministrationGroup
+}
+class AppUser {
+   avatarUrl: String
+   lastName: String
+   avatarBase64Image: String
+   registeredOn: LocalDateTime
+   avatarContentType: String
+}
+class Banner {
+   id: Long
+   lastUpdated: LocalDateTime
+   createdOn: LocalDate
+}
+class ContactEmployee
+class Deputy {
+   district: String
+}
+class Document {
+   mongoId: String
+   name: String
+   title: String
+   documentGroup: DocumentGroup
+   id: Long
+   hashCode: Integer
+   createdOn: LocalDateTime
+}
+class DocumentGroup {
+   name: String
+   groups: List<DocumentGroup>
+   documentGroup: DocumentGroup
+   id: Long
+   createdOn: Date
+   documents: List<Document>
+}
+class Employee {
+   position: String
+   last_name: String
+   first_name: String
+   id: Long
+   email: String
+   phone_number: String
+}
+class Image {
+   contentType: String
+   filename: String
+   binaryImage: Binary
+   id: String
+   hashCode: Integer
+}
+class Institution {
+   employee_list: List<InstitutionEmployee>
+   title: String
+   document_group: List<DocumentGroup>
+   id: Long
+   iconUrl: String
+}
+class InstitutionEmployee {
+   sub_institution: String
+   institution_id: Long
+}
+class LinkBanner {
+   text: String
+   url: String
+}
+class Message {
+   targetUserName: String
+   senderName: String
+   message: String
+}
+class MongoDocument {
+   contentType: String
+   filename: String
+   file: Binary
+   id: String
+}
+class MongoNewsImage {
+   contentType: String
+   binaryImage: Binary
+   hashCode: int
+   id: String
+   fileName: String
+   lastQueried: LocalDate
+}
+class News {
+   commentsAmount: Long
+   description: String
+   id: Long
+   image_id: String
+   newsType: NewsType
+   views: Long
+   main_text: String
+   dateOfPublication: LocalDateTime
+   last_updated: LocalDateTime
+   images: List<NewsImage>
+}
+class NewsComment {
+   newsId: Long
+   id: Long
+   createdOn: LocalDateTime
+   replies: List<NewsComment>
+   editedOn: LocalDateTime
+   text: String
+   commentId: Long
+   author: User
+}
+class NewsCommenter
+class NewsImage {
+   mongoImageId: String
+   newsId: Long
+   id: Long
+   fileName: String
+}
+class NewsType {
+   titleExplanation: String
+   id: Long
+   title: String
+}
+class Notification {
+   text: String
+   author: AppUser
+   id: Long
+   createdOn: Date
+   message: String
+   updatedOn: Date
+}
+interface NotificationDtoWithViews << interface >> {
+   author: IAppUserDto
+   isViewed: Boolean
+   id: Long
+   createdOn: Date
+   message: String
+   updatedOn: Date
+}
+class NotificationView {
+   id: Long
+   notificationId: Long
+   readIn: Date
+   userId: String
+}
+class TextBanner {
+   description: String
+   mainText: String
+}
+class User {
+   email: String
+   id: String
+   firstName: String
+}
+
+AdministrationEmployee   "1" *-[#595959,plain]-> "administration_group\n1" AdministrationGroup      
+AdministrationEmployee    -[#000082,plain]-^  Employee                 
+AdministrationGroup      "1" *-[#595959,plain]-> "employee_list\n*" AdministrationEmployee   
+AppUser                   -[#000082,plain]-^  User                     
+ContactEmployee           -[#000082,plain]-^  Employee                 
+Deputy                    -[#000082,plain]-^  Employee                 
+Document                 "1" *-[#595959,plain]-> "documentGroup\n1" DocumentGroup            
+DocumentGroup            "1" *-[#595959,plain]-> "documents\n*" Document                 
+Institution              "1" *-[#595959,plain]-> "document_group\n*" DocumentGroup            
+Institution              "1" *-[#595959,plain]-> "employee_list\n*" InstitutionEmployee      
+InstitutionEmployee       -[#000082,plain]-^  Employee                 
+LinkBanner                -[#000082,plain]-^  Banner                   
+News                     "1" *-[#595959,plain]-> "images\n*" NewsImage                
+News                     "1" *-[#595959,plain]-> "newsType\n1" NewsType                 
+NewsComment              "1" *-[#595959,plain]-> "author\n1" User                     
+NewsCommenter             -[#000082,plain]-^  User                     
+Notification             "1" *-[#595959,plain]-> "author\n1" AppUser                  
+TextBanner                -[#000082,plain]-^  Banner                   
+@enduml

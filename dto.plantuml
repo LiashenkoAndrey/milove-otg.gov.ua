@@ -1,0 +1,126 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class AdminMetadataDto {
+   isDocumentsPageTourCompleted: Boolean
+   isShowConfirmWhenDeleteDocument: Boolean
+   userId: String
+}
+class AdministrationGroupDto {
+   id: Long
+   title: String
+}
+class BannerDto {
+   description: String
+   id: Long
+   mainText: String
+}
+interface DocGroupWithOnlyId << interface >> {
+   id: Long
+}
+interface DocumentDto << interface >> {
+   name: String
+   documentGroup: DocGroupWithOnlyId
+   title: String
+   id: Long
+}
+interface DocumentGroupDto2 << interface >> {
+   name: String
+   id: Long
+   documentGroup: DocumentGroupDto2
+}
+interface DocumentGroupWithGroupsDto << interface >> {
+   name: String
+   groups: List<DocumentGroupWithGroupsDto>
+   id: Long
+   createdOn: Date
+}
+interface DocumentGroupWithGroupsDtoAndDocumentsDto << interface >> {
+   name: String
+   groups: List<DocumentGroupWithGroupsDtoAndDocumentsDto>
+   id: Long
+   documents: List<DocumentDto>
+}
+interface DocumentWithGroupDto << interface >> {
+   name: String
+   title: String
+   id: Long
+   documentGroup: DocumentGroupDto2
+}
+interface IAppUserDto << interface >> {
+   avatarUrl: String
+   firstName: String
+   lastName: String
+   avatarBase64Image: String
+   id: String
+}
+interface INewsDto << interface >> {
+   commentsAmount: Long
+   description: String
+   id: Long
+   image_id: String
+   newsType: NewsType
+   views: Long
+   dateOfPublication: LocalDateTime
+   images: List<NewsImage>
+}
+class InstitutionDto {
+   id: Long
+   iconUrl: String
+   title: String
+}
+class LinkBannerDto {
+   id: Long
+   text: String
+   url: String
+}
+class NewCommentDto {
+   text: String
+   commentId: Long
+   newsId: Long
+   newsCommenter: NewsCommenter
+   appUserId: String
+}
+class NewsDTO {
+   description: String
+   views: Long
+   id: Long
+   images: List<NewsImageDTO>
+   created: LocalDate
+   newsType: String
+}
+class NewsDtoWithImageAndType {
+   description: String
+   created: String
+   titleExplanation: String
+   id: Long
+   image: MultipartFile
+   news_type_id: String
+   main_text: String
+   typeTitle: String
+}
+class NewsImageDTO {
+   id: Long
+   mongoImageId: Long
+   newsId: Long
+}
+class NewsPageDto {
+   news: List<INewsDto>
+   totalElements: Long
+}
+class SubGroupDto {
+   id: Long
+   title: String
+}
+class UserDto {
+   appUser: AppUser
+   isRegistered: Boolean
+   adminMetadata: AdminMetadata
+}
+
+NewsDTO                                   "1" *-[#595959,plain]-> "images\n*" NewsImageDTO                              
+NewsPageDto                               "1" *-[#595959,plain]-> "news\n*" INewsDto                                  
+@enduml
