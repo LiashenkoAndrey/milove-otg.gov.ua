@@ -23,7 +23,6 @@ public class DocumentController {
 
     private final DocumentRepo documentRepo;
     private final DocumentService documentService;
-    private final MongoDocumentRepo mongoDocumentRepo;
 
     @PutMapping("/protected/document/{id}/update")
     public Long updateDocumentName(@PathVariable Long id,

@@ -44,7 +44,6 @@ public class TextBannerController {
 
     @PutMapping("/update")
     public void update(@RequestBody TextBanner banner) {
-        if (banner.getId() == null) return ResponseEntity.badRequest().build();
         TextBanner saved = repo.findById(banner.getId()).orElseThrow(EntityNotFoundException::new);
 
         EntityMapper.map(banner, saved)
