@@ -10,12 +10,19 @@
 
     <developers>
         <developer>
-            <name>Andrew</name>
+            <name>Andrew Liashenko</name>
             <roles>
-                <role>java developer</role>
+                <role>Java developer</role>
             </roles>
             <email>a.liashenko@e-u.edu.ua</email>
             <url>https://github.com/LiashenkoAndrey</url>
+        </developer>
+        <developer>
+            <name>Maxym Zelinskiy</name>
+            <roles>
+                <role>Java developer</role>
+            </roles>
+            <url>https://github.com/JavaDevMZ</url>
         </developer>
     </developers>
 
