@@ -1,12 +1,15 @@
 package gov.milove.main.domain;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.URL;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -24,11 +27,4 @@ public class LinkBanner extends Banner {
     @URL
     @NotNull
     private String url;
-
-    @Builder
-    public LinkBanner(Long id, LocalDate createdOn, LocalDateTime lastUpdated, String text, String url) {
-        super(id, createdOn, lastUpdated);
-        this.url = url;
-        this.text = text;
-    }
 }

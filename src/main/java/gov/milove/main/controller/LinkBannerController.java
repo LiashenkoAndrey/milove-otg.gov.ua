@@ -1,62 +1,77 @@
 package gov.milove.main.controller;
 
-import gov.milove.main.domain.LinkBanner;
-import gov.milove.main.repository.jpa.LinkBannerRepository;
-import gov.milove.main.util.EntityMapper;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-
+import gov.milove.main.dto.LinkBannerDto;
+import gov.milove.main.dto.request.LinkBannerCreateRequest;
+import gov.milove.main.dto.request.LinkBannerUpdateRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.CREATED;
+@Tag(
+    name = "Link banner controller",
+    description = "Provides functionality: get, create, update and delete link banners"
+)
+@Validated
+public interface LinkBannerController {
 
-@RestController
-@RequestMapping("/api/link-banner")
-@RequiredArgsConstructor
-public class LinkBannerController {
+  @Operation(
+      summary = "Get all banners",
+      description = "Gets a full list of link banners ordered by creation date",
+      security = @SecurityRequirement(name = "No auth requirements")
+  )
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Get full list"),
+      @ApiResponse(responseCode = "500", description = "Internal server exception"),
+  })
+  List<LinkBannerDto> findAll();
 
-    private final LinkBannerRepository repo;
+  @Operation(
+      summary = "Creates a new link banner",
+      security = @SecurityRequirement(name = "Requires an admin rights")
+  )
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Banner added successfully"),
+      @ApiResponse(responseCode = "401", description = "Authentication issue"),
+      @ApiResponse(responseCode = "422",
+          description = "Field validation failed. One or several do not meet the conditions"),
+      @ApiResponse(responseCode = "400", description = "Invalid body provided")
+  })
+  ResponseEntity<LinkBannerDto> addBanner(@Valid LinkBannerCreateRequest request);
 
-    @GetMapping("/all")
-    public List<LinkBanner> getAll() {
-        return repo.findAll(Sort.by("createdOn").descending());
-    }
+  @Operation(
+      summary = "Fully updates link banner",
+      security = @SecurityRequirement(name = "Requires an admin rights")
+  )
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Banner updated successfully"
+      ),
+      @ApiResponse(responseCode = "401", description = "Authentication issue"),
+      @ApiResponse(responseCode = "404", description = "Banner with provided id not found"),
+      @ApiResponse(responseCode = "422",
+          description = "Field validation failed. One or several do not meet the conditions"),
+      @ApiResponse(responseCode = "400", description = "Invalid body provided")
+  })
+  ResponseEntity<LinkBannerDto> update(@Valid LinkBannerUpdateRequest request);
 
-    @PostMapping("/new")
-    public ResponseEntity<Long> createBanner(@RequestBody LinkBanner banner) {
-        if (repo.exists(Example.of(banner))) {
-            return ResponseEntity
-                    .status(CONFLICT)
-                    .build();
-        } else {
-            LinkBanner saved = repo.save(banner);
-            return ResponseEntity
-                    .status(CREATED)
-                    .body(saved.getId());
-        }
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody LinkBanner banner) {
-        if (banner.getId() == null) return ResponseEntity.badRequest().build();
-        LinkBanner saved = repo.findById(banner.getId()).orElseThrow(EntityNotFoundException::new);
-
-        EntityMapper.map(banner, saved)
-                .mapEmptyString(false)
-                .map();
-
-        repo.save(saved);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam("id") Long id) {
-        repo.deleteById(id);
-    }
+  @Operation(
+      summary = "Deletes link banner",
+      security = @SecurityRequirement(name = "Requires an admin rights")
+  )
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200",
+          description = "Banner deleted successfully"
+      ),
+      @ApiResponse(responseCode = "401", description = "Authentication issue"),
+      @ApiResponse(responseCode = "404", description = "Banner with provided id not found"),
+      @ApiResponse(responseCode = "400", description = "Invalid id type provided, in must be int")
+  })
+  ResponseEntity<?> delete(@Pattern(regexp = "\\d+") Long id);
 }

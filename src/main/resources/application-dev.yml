@@ -22,7 +22,7 @@ spring:
     properties:
       hibernate:
 
-    show-sql: true
+#    show-sql: true
 #    open-in-view: false
 
   mvc:
