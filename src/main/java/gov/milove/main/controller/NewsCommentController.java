@@ -1,14 +1,14 @@
-package gov.milove.main.controller;
+package gov.milove.controllers;
 
 
-import gov.milove.main.domain.NewsComment;
-import gov.milove.main.domain.NewsCommenter;
-import gov.milove.main.domain.User;
-import gov.milove.main.dto.NewCommentDto;
-import gov.milove.main.repository.jpa.AppUserRepo;
-import gov.milove.main.repository.jpa.NewsCommentRepo;
-import gov.milove.main.repository.jpa.NewsCommenterRepo;
-import gov.milove.main.util.Util;
+import gov.milove.controllers.abstr.INewsCommentController;
+import gov.milove.domain.NewsComment;
+import gov.milove.domain.NewsCommenter;
+import gov.milove.domain.User;
+import gov.milove.domain.dto.NewCommentDto;
+import gov.milove.repositories.jpa.AppUserRepo;
+import gov.milove.repositories.jpa.NewsCommentRepo;
+import gov.milove.repositories.jpa.NewsCommenterRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
@@ -16,24 +16,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+import static gov.milove.util.Util.decodeUriComponent;
+
 @RestController
 @Log4j2
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class NewsCommentController {
+public class NewsCommentController implements INewsCommentController {
 
     private final AppUserRepo appUserRepo;
     private final NewsCommentRepo commentRepo;
     private final NewsCommenterRepo newsCommenterRepo;
 
-    @GetMapping("/news/{newsId}/comments")
-    public List<NewsComment> getComments(@PathVariable Long newsId) {
+    @Override
+    public List<NewsComment> getComments(Long newsId) {
         return commentRepo.findAllByNewsIdOrderByCreatedOnDesc(newsId);
     }
 
-    @PostMapping("/news/comment/new")
-    public NewsComment newComment(@RequestBody NewCommentDto dto) {
-        String appUserId =  Util.decodeUriComponent(dto.getAppUserId());
+    @Override
+    public NewsComment newComment(NewCommentDto dto) {
+        String appUserId =  decodeUriComponent(dto.getAppUserId());
         log.info("new comment, newsId = {}, appUserId = {}, newsCommenter = {}, commentId = {}, text = {}", dto.getNewsId(), appUserId, dto.getNewsCommenter(), dto.getCommentId(), dto.getText());
         User author;
 
@@ -64,8 +66,8 @@ public class NewsCommentController {
         return saved;
     }
 
-    @DeleteMapping("/protected/news/comment/{id}/delete")
-    public Long delete(@PathVariable Long id) {
+    @Override
+    public Long delete(Long id) {
         commentRepo.deleteById(id);
         return id;
     }

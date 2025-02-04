@@ -1,43 +1,41 @@
-package gov.milove.main.controller;
+package gov.milove.controllers;
 
-import gov.milove.main.domain.ContactEmployee;
-import gov.milove.main.repository.jpa.ContactEmployeeRepository;
+import gov.milove.controllers.abstr.IContactEmployeeController;
+import gov.milove.domain.ContactEmployee;
+import gov.milove.repositories.jpa.ContactEmployeeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
 @RequiredArgsConstructor
-public class ContactEmployeeController {
+public class ContactEmployeeController implements IContactEmployeeController {
 
     private final ContactEmployeeRepository repository;
 
-    @GetMapping("/contacts")
+
+    @Override
     public List<ContactEmployee> getAll() {
         return repository.findAll();
     }
 
 
-    @PostMapping("/protected/contact/new")
-    public ContactEmployee create(@RequestBody ContactEmployee employee) {
+    @Override
+    public ContactEmployee create(ContactEmployee employee) {
         repository.save(employee);
         return employee;
     }
 
-    @PostMapping("/protected/contact/update")
-    public Long update(
-            @RequestParam("id") Long id,
-            @RequestBody ContactEmployee updatedEmployee) {
-
+    @Override
+    public Long update(Long id, ContactEmployee updatedEmployee) {
         updatedEmployee.setId(id);
         repository.save(updatedEmployee);
         return id;
     }
 
-    @DeleteMapping("/protected/contact/{id}/delete")
-    public Long delete(@PathVariable Long id) {
+    @Override
+    public Long delete(Long id) {
         repository.deleteById(id);
         return id;
     }

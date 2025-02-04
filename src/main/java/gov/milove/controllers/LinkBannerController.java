@@ -1,8 +1,8 @@
 package gov.milove.controllers;
 
-import gov.milove.controllers.abstr.ITextBannerController;
-import gov.milove.domain.TextBanner;
-import gov.milove.repositories.jpa.TextBannerRepository;
+import gov.milove.controllers.abstr.ILinkBannerController;
+import gov.milove.domain.LinkBanner;
+import gov.milove.repositories.jpa.LinkBannerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -18,35 +18,31 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequiredArgsConstructor
-public class TextBannerController implements ITextBannerController {
+public class LinkBannerController implements ILinkBannerController {
 
-    private final TextBannerRepository repo;
+    private final LinkBannerRepository repo;
 
     @Override
-    public List<TextBanner> getAll() {
+    public List<LinkBanner> getAll() {
         return repo.findAll(Sort.by("createdOn").descending());
     }
 
     @Override
-    public ResponseEntity<Long> createBanner(TextBanner banner) {
+    public ResponseEntity<Long> createBanner(LinkBanner banner) {
         if (repo.exists(Example.of(banner))) {
             return ResponseEntity.status(CONFLICT).build();
         } else {
-            TextBanner saved = repo.save(banner);
+            LinkBanner saved = repo.save(banner);
             return ResponseEntity.status(CREATED).body(saved.getId());
         }
     }
 
-
     @Override
-    public ResponseEntity<?> update(TextBanner banner) {
+    public ResponseEntity<?> update(LinkBanner banner) {
         if (banner.getId() == null) return ResponseEntity.badRequest().build();
-        TextBanner saved = repo.findById(banner.getId()).orElseThrow(EntityNotFoundException::new);
+        LinkBanner saved = repo.findById(banner.getId()).orElseThrow(EntityNotFoundException::new);
 
-        map(banner, saved)
-                .mapEmptyString(false)
-                .mapNull(false)
-                .map();
+        map(banner, saved).mapEmptyString(false).map();
 
         repo.save(saved);
         return ResponseEntity.ok().build();
