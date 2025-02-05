@@ -1,11 +1,11 @@
 package gov.milove.main.controller;
 
+import gov.milove.forum.dto.AppUserDto;
 import gov.milove.main.domain.AdminMetadata;
 import gov.milove.main.domain.AppUser;
 import gov.milove.main.domain.User;
 import gov.milove.main.dto.AdminMetadataDto;
 import gov.milove.main.dto.UserDto;
-import gov.milove.forum.dto.AppUserDto;
 import gov.milove.main.repository.jpa.AppUserRepo;
 import gov.milove.main.repository.mongo.AdminMetadataRepo;
 import gov.milove.main.util.Util;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//move to forum
 @Log4j2
 @RestController
 @RequestMapping("/api")

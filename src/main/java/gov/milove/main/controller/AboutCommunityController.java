@@ -1,29 +1,20 @@
-package gov.milove.controllers;
+package gov.milove.main.controller;
 
-import gov.milove.controllers.abstr.IAboutCommunityController;
-import gov.milove.domain.About;
-import gov.milove.repositories.mongo.AboutRepo;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import gov.milove.main.domain.About;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name="About community controller")
 @RestController
-@RequiredArgsConstructor
-public class AboutCommunityController implements IAboutCommunityController {
+@RequestMapping("/api")
+public interface AboutCommunityController {
 
-    private final AboutRepo aboutRepo;
+    @Operation(summary = "Get the about community page")
+    @GetMapping("/aboutCommunity")
+    About getPage();
 
-    @Override
-    public About getPage() {
-        return aboutRepo.findById("663f6e32388652544c7ff08f").orElseThrow(EntityNotFoundException::new);
-    }
-
-    @Override
-    public String getUpdatePage(@RequestParam String mainText) {
-        About about =  aboutRepo.findById("663f6e32388652544c7ff08f").orElseThrow(EntityNotFoundException::new);
-        about.setMainText(mainText);
-        aboutRepo.save(about);
-        return about.getId();
-    }
-
+    @Operation(summary = "Update the about community page")
+    @PutMapping("/protected/aboutCommunity/update")
+    String getUpdatePage(@RequestParam String mainText);
 }

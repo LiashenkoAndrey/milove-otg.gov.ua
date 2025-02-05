@@ -1,18 +1,18 @@
-package gov.milove.controllers;
+package gov.milove.main.controller.impl;
 
-import gov.milove.controllers.abstr.INewsController;
-import gov.milove.domain.News;
-import gov.milove.domain.NewsImage;
-import gov.milove.domain.NewsType;
-import gov.milove.domain.dto.INewsDto;
-import gov.milove.domain.dto.NewsDtoWithImageAndType;
-import gov.milove.domain.dto.NewsPageDto;
-import gov.milove.exceptions.IllegalParameterException;
-import gov.milove.exceptions.NewsNotFoundException;
-import gov.milove.repositories.jpa.NewsRepository;
-import gov.milove.repositories.jpa.NewsTypeRepo;
-import gov.milove.services.NewsImagesService;
-import gov.milove.services.NewsService;
+import gov.milove.main.controller.NewsController;
+import gov.milove.main.domain.News;
+import gov.milove.main.domain.NewsImage;
+import gov.milove.main.domain.NewsType;
+import gov.milove.main.dto.INewsDto;
+import gov.milove.main.dto.NewsDtoWithImageAndType;
+import gov.milove.main.dto.NewsPageDto;
+import gov.milove.main.exception.IllegalParameterException;
+import gov.milove.main.exception.NewsNotFoundException;
+import gov.milove.main.repository.jpa.NewsRepository;
+import gov.milove.main.repository.jpa.NewsTypeRepo;
+import gov.milove.main.service.NewsImagesService;
+import gov.milove.main.service.NewsService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 @Log4j2
 @RequiredArgsConstructor
-public class NewsController implements INewsController {
+public class NewsControllerImpl implements NewsController {
 
     private final NewsService newsService;
     private final NewsRepository newsRepository;
@@ -50,19 +50,6 @@ public class NewsController implements INewsController {
     public NewsType saveNewsType(NewsType newsType) {
         return newsTypeRepo.save(newsType);
     }
-
-
-//
-//    public void delete() {
-//        log.info("Start search");
-//        List<String> documents = newsRepository.findAll().stream().map(News::getImage_id).toList();
-//        log.info("50%");
-//        List<MongoDocument> mongoDocuments = mongoDocumentRepo.findAll().stream()
-//                .filter(mongoDocument -> !documents.contains(mongoDocument.getId())).toList();
-//        log.info("Not used docs! size = {} {}", mongoDocuments.size(), mongoDocuments);
-//        mongoDocumentRepo.deleteAll(mongoDocuments);
-//        log.info("End search");
-//    }
 
     @Override
     @Transactional
@@ -93,14 +80,17 @@ public class NewsController implements INewsController {
         return newsTypeRepo.findAll();
     }
 
+
     @Override
-    public ResponseEntity<?> deleteNewsById(Long id) {
+    public ResponseEntity<Long> deleteNewsById(Long id) {
         if (id <= 0) throw new IllegalParameterException("Id must be higher than zero");
+        if (id <= 0) throw new IllegalParameterException("Id must be higher than zero");
+        newsService.deleteById(id);
         newsService.deleteById(id);
         return ResponseEntity.accepted().body(id);
     }
 
-    @Override
+
     public ResponseEntity<String> deleteNewsImageById(String id) {
         if (!ObjectId.isValid(id)) throw new IllegalParameterException("Image id hex string is not valid");
         newsService.deleteNewsImageById(id);
@@ -127,9 +117,8 @@ public class NewsController implements INewsController {
         return newsImages;
     }
 
-    @Override
-    public News getNewsById(Long news_id) {
-        return newsRepository.findById(news_id).orElseThrow(NewsNotFoundException::new);
+    public News getNewsById(Long newsId) {
+        return newsRepository.findById(newsId).orElseThrow(NewsNotFoundException::new);
     }
 
     @Override

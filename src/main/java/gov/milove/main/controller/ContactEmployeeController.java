@@ -1,42 +1,32 @@
-package gov.milove.controllers;
+package gov.milove.main.controller;
 
-import gov.milove.controllers.abstr.IContactEmployeeController;
-import gov.milove.domain.ContactEmployee;
-import gov.milove.repositories.jpa.ContactEmployeeRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RestController;
+import gov.milove.main.domain.ContactEmployee;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name="Contact employee controller")
 @RestController
-@RequiredArgsConstructor
-public class ContactEmployeeController implements IContactEmployeeController {
+@RequestMapping("/api")
+public interface ContactEmployeeController {
 
-    private final ContactEmployeeRepository repository;
+    @Operation(summary = "Get the available employees")
+    @GetMapping("/contacts")
+    List<ContactEmployee> getAll();
 
+    @Operation(summary = "Add an employee")
+    @PostMapping("/protected/contact/new")
+    ContactEmployee create(@RequestBody ContactEmployee employee);
 
-    @Override
-    public List<ContactEmployee> getAll() {
-        return repository.findAll();
-    }
+    @Operation(summary = "Update an employee")
+    @PostMapping("/contact/update")
+    Long update(
+            @RequestParam("id") Long id,
+            @RequestBody ContactEmployee updatedEmployee);
 
-
-    @Override
-    public ContactEmployee create(ContactEmployee employee) {
-        repository.save(employee);
-        return employee;
-    }
-
-    @Override
-    public Long update(Long id, ContactEmployee updatedEmployee) {
-        updatedEmployee.setId(id);
-        repository.save(updatedEmployee);
-        return id;
-    }
-
-    @Override
-    public Long delete(Long id) {
-        repository.deleteById(id);
-        return id;
-    }
+    @Operation(summary = "Delete an employee")
+    @DeleteMapping("/protected/contact/{id}/delete")
+    Long delete(@PathVariable Long id);
 }

@@ -1,60 +1,30 @@
-package gov.milove.controllers;
+package gov.milove.main.controller;
 
-import gov.milove.controllers.abstr.ITextBannerController;
-import gov.milove.domain.TextBanner;
-import gov.milove.repositories.jpa.TextBannerRepository;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Sort;
+import gov.milove.main.domain.TextBanner;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static gov.milove.util.EntityMapper.map;
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.CREATED;
+@Tag(name = "Text banner controller")
+@RequestMapping("/api/text-banner")
+public interface TextBannerController {
 
-@RestController
-@RequiredArgsConstructor
-public class TextBannerController implements ITextBannerController {
+    @Operation(summary = "Get all text banners")
+    @GetMapping("/all")
+    List<TextBanner> getAll();
 
-    private final TextBannerRepository repo;
+    @Operation(summary = "Create text banner")
+    @PostMapping("/new")
+    ResponseEntity<Long> createBanner(@RequestBody TextBanner banner);
 
-    @Override
-    public List<TextBanner> getAll() {
-        return repo.findAll(Sort.by("createdOn").descending());
-    }
+    @Operation(summary = "Update text banner")
+    @PutMapping("/update")
+    ResponseEntity update(@RequestBody TextBanner banner);
 
-    @Override
-    public ResponseEntity<Long> createBanner(TextBanner banner) {
-        if (repo.exists(Example.of(banner))) {
-            return ResponseEntity.status(CONFLICT).build();
-        } else {
-            TextBanner saved = repo.save(banner);
-            return ResponseEntity.status(CREATED).body(saved.getId());
-        }
-    }
-
-
-    @Override
-    public ResponseEntity<?> update(TextBanner banner) {
-        if (banner.getId() == null) return ResponseEntity.badRequest().build();
-        TextBanner saved = repo.findById(banner.getId()).orElseThrow(EntityNotFoundException::new);
-
-        map(banner, saved)
-                .mapEmptyString(false)
-                .mapNull(false)
-                .map();
-
-        repo.save(saved);
-        return ResponseEntity.ok().build();
-    }
-
-    @Override
-    public ResponseEntity<?> delete(Long id) {
-        repo.deleteById(id);
-        return ResponseEntity.ok().build();
-    }
+    @Operation(summary = "Delete text banner")
+    @DeleteMapping("/delete")
+    ResponseEntity delete(@RequestParam("id") Long id);
 }

@@ -2,26 +2,14 @@ package gov.milove.main.controller;
 
 import gov.milove.main.domain.News;
 import gov.milove.main.domain.NewsImage;
-import gov.milove.main.dto.NewsPageDto;
 import gov.milove.main.domain.NewsType;
 import gov.milove.main.dto.INewsDto;
 import gov.milove.main.dto.NewsDtoWithImageAndType;
-import gov.milove.main.exception.IllegalParameterException;
-import gov.milove.main.exception.NewsNotFoundException;
-import gov.milove.main.repository.jpa.NewsRepository;
-import gov.milove.main.repository.jpa.NewsTypeRepo;
-import gov.milove.main.service.NewsImagesService;
-import gov.milove.main.service.NewsService;
-import jakarta.persistence.EntityNotFoundException;
+import gov.milove.main.dto.NewsPageDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.bson.types.ObjectId;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,150 +20,78 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RestController
-@Log4j2
-@RequestMapping("/api")
-@RequiredArgsConstructor
+@Tag(name = "News controller")
 @Validated
-public class NewsController {
+@RequestMapping("/api")
+public interface NewsController {
 
-  private final NewsService newsService;
-  private final NewsRepository newsRepository;
-  private final NewsTypeRepo newsTypeRepo;
-  private final NewsImagesService newsImagesService;
+    @Operation(summary = "Get news page")
+    @GetMapping("/news/all")
+    List<INewsDto> newsAll(@RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                           @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer size);
 
-  @GetMapping("/news/all")
-  public List<INewsDto> newsAll(
-      @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-      @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer size) {
+    @Operation(summary = "Add news type")
+    @PostMapping("/protected/newsType/new")
+    NewsType saveNewsType(@Validated @RequestBody NewsType newsType);
 
-    return newsRepository.findDistinctBy(PageRequest.of(page, size)
-        .withSort(Sort.Direction.DESC, "dateOfPublication")).toList();
+    @Operation(summary = "Add news")
+    @PostMapping("/protected/news/new")
+    @Transactional
+    ResponseEntity<Long> newNews(@RequestParam @NotBlank @Size(max = 300) String title,
+                                 @RequestParam @NotBlank String text,
+                                 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateOfPublication,
+                                 @RequestParam(required = false) @Future @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateOfPostponedPublication,
+                                 @RequestParam @NotEmpty @Size(max = 20) MultipartFile[] images,
+                                 @RequestParam Long newsTypeId
+    );
 
-  }
+    @Operation(summary = "Delete news type")
+    @DeleteMapping("/protected/newsType/{id}/delete")
+    void deleteNewsTypeById(@PathVariable Long id);
 
-  @PostMapping("/protected/newsType/new")
-  public NewsType saveNewsType(@Validated @RequestBody NewsType newsType) {
-    return newsTypeRepo.save(newsType);
-  }
+    @Operation(summary = "Get news type")
+    @GetMapping("/protected/news-types")
+    List<NewsType> getNewsTypes();
 
-  @PostMapping("/protected/news/new")
-  @Transactional
-  public ResponseEntity<Long> newNews(@RequestParam @NotBlank @Size(max = 300) String title,
-      @RequestParam @NotBlank String text,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateOfPublication,
-      @RequestParam(required = false) @Future @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateOfPostponedPublication,
-      @RequestParam @NotEmpty @Size(max = 20) MultipartFile[] images,
-      @RequestParam Long newsTypeId
-  ) {
-    log.info("CREATE NEWS");
+    @Operation(summary = "Delete news by id")
+    @DeleteMapping("/protected/news/{id}/delete")
+    ResponseEntity<Long> deleteNewsById(@PathVariable Long id);
 
-    NewsType newsType =
-        newsTypeId > 0 ? newsTypeRepo.findById(newsTypeId).orElseThrow(EntityNotFoundException::new)
-            : null;
+    @Operation(summary = "Delete news image")
+    @DeleteMapping("/protected/news/image/{id}/delete")
+    ResponseEntity<String> deleteNewsImageById(@PathVariable String id);
 
-    News newNews = News.builder()
-        .description(title)
-        .main_text(text)
-        .dateOfPublication(dateOfPublication)
-        .newsType(newsType)
-        .views(0L)
-        .build();
+    @Operation(summary = "Update news")
+    @PutMapping("/protected/news/{id}/update")
+    ResponseEntity<Long> updateNews(@PathVariable Long id,
+                                    @RequestParam @NotBlank @Size(max = 300) String title,
+                                    @RequestParam @NotBlank String text,
+                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateOfPublication);
 
-    News news = newsService.save(newNews, images, dateOfPostponedPublication);
+    @Operation(summary = "Add news image")
+    @PostMapping("/protected/news/{newsId}/image/new")
+    List<NewsImage> saveNewNewsImage(@PathVariable Long newsId,
+                                     @RequestParam("images") MultipartFile[] files);
 
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(news.getId());
-  }
+    @Operation(summary = "Get news by id")
+    @GetMapping("/news/{newsId}")
+    News getNewsById(@PathVariable("newsId") Long newsId);
 
-  @DeleteMapping("/protected/newsType/{id}/delete")
-  public void deleteNewsTypeById(@PathVariable Long id) {
-      if (id <= 0) {
-          throw new IllegalParameterException("Id must be higher than zero");
-      }
-    newsTypeRepo.deleteById(id);
-  }
+    @Operation(summary = "Get similar news by id")
+    @GetMapping("/news/{newsId}/similar")
+    List<INewsDto> getSimilarNewsByNewsId(@PathVariable Long newsId);
 
-  @GetMapping("/protected/news-types")
-  public List<NewsType> getNewsTypes() {
-    return newsTypeRepo.findAll();
-  }
+    @Operation(summary = "Get the most recent news")
+    @GetMapping("/news/latest")
+    NewsPageDto getLatest(@RequestParam(defaultValue = "6", required = false) @Min(1) Integer pageSize,
+                          @RequestParam(defaultValue = "0", required = false) Integer pageNumber);
 
-  @DeleteMapping("/protected/news/{id}/delete")
-  public ResponseEntity<Long> deleteNewsById(@PathVariable Long id) {
-      if (id <= 0) {
-          throw new IllegalParameterException("Id must be higher than zero");
-      }
-    newsService.deleteById(id);
-    return ResponseEntity.accepted().body(id);
-  }
+    @Operation(summary = "Update news")
+    @PostMapping("/news/update")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    ResponseEntity<String> updateNews(@ModelAttribute NewsDtoWithImageAndType news);
 
-  @DeleteMapping("/protected/news/image/{id}/delete")
-  public ResponseEntity<String> deleteNewsImageById(@PathVariable String id) {
-      if (!ObjectId.isValid(id)) {
-          throw new IllegalParameterException("Image id hex string is not valid");
-      }
-    newsService.deleteNewsImageById(id);
-    return ResponseEntity.accepted().body(id);
-  }
-
-  @PutMapping("/protected/news/{id}/update")
-  public ResponseEntity<Long> updateNews(@PathVariable Long id,
-      @RequestParam @NotBlank @Size(max = 300) String title,
-      @RequestParam @NotBlank String text,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateOfPublication) {
-    log.info("title = {}, text = {}, date = {}", title, text, dateOfPublication);
-    News news = newsRepository.findById(id).orElseThrow(NewsNotFoundException::new);
-    news.setDescription(title);
-    news.setDateOfPublication(dateOfPublication);
-    news.setMain_text(text);
-    newsRepository.save(news);
-    return ResponseEntity
-        .accepted()
-        .body(id);
-  }
-
-  @PostMapping("/protected/news/{newsId}/image/new")
-  public List<NewsImage> saveNewNewsImage(@PathVariable Long newsId,
-      @RequestParam("images") MultipartFile[] files) {
-    News news = newsRepository.findById(newsId).orElseThrow(NewsNotFoundException::new);
-    List<NewsImage> newsImages = newsImagesService.saveAll(List.of(files));
-    news.getImages().addAll(newsImages);
-    newsRepository.save(news);
-    return newsImages;
-  }
-
-  @GetMapping("/news/{newsId}")
-  public News getNewsById(@PathVariable("newsId") Long newsId) {
-    return newsRepository.findById(newsId).orElseThrow(NewsNotFoundException::new);
-  }
-
-  @GetMapping("/news/{newsId}/similar")
-  public List<INewsDto> getSimilarNewsByNewsId(@PathVariable Long newsId) {
-    News news = newsRepository.findById(newsId).orElseThrow(NewsNotFoundException::new);
-
-    return (news.getNewsType() != null ?
-        newsRepository.getLastNewsDTOByNewsTypeIdWithLimit(
-            newsId,
-            news.getNewsType().getId(),
-            PageRequest.of(0, 3).withSort(Sort.Direction.DESC, "dateOfPublication")
-        ).toList() : List.of());
-  }
-
-  @GetMapping("/news/latest")
-  public NewsPageDto getLatest(
-      @RequestParam(defaultValue = "6", required = false) @Min(1) Integer pageSize,
-      @RequestParam(defaultValue = "0", required = false) Integer pageNumber) {
-    Page<INewsDto> newsDtos = newsRepository.findDistinctBy(
-        PageRequest.ofSize(pageSize).withPage(pageNumber)
-            .withSort(Sort.Direction.DESC, "dateOfPublication"));
-    return new NewsPageDto(newsDtos);
-  }
-
-  @PostMapping("/news/{id}/incrementViews")
-  public Long incrementViews(@PathVariable Long id) {
-    newsRepository.incrementViews(id);
-    return id;
-  }
+    @Operation(summary = "Increment views count")
+    @PostMapping("/news/{id}/incrementViews")
+    Long incrementViews(@PathVariable Long id);
 }

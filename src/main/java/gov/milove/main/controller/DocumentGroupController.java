@@ -1,68 +1,43 @@
-package gov.milove.controllers;
+package gov.milove.main.controller;
 
-import gov.milove.controllers.abstr.IDocumentGroupController;
-import gov.milove.domain.Document;
-import gov.milove.domain.DocumentGroup;
-import gov.milove.domain.dto.DocumentGroupWithGroupsDto;
-import gov.milove.domain.dto.DocumentGroupWithGroupsDtoAndDocumentsDto;
-import gov.milove.exceptions.DocumentGroupNotFoundException;
-import gov.milove.repositories.jpa.document.DocumentGroupRepo;
-import gov.milove.services.DocumentGroupService;
-import gov.milove.services.DocumentService;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.RestController;
+import gov.milove.main.domain.Document;
+import gov.milove.main.dto.DocumentGroupWithGroupsDto;
+import gov.milove.main.dto.DocumentGroupWithGroupsDtoAndDocumentsDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@RestController
-@RequiredArgsConstructor
-@Log4j2
-public class DocumentGroupController implements IDocumentGroupController {
+@Tag(name = "Document group controller")
+@RequestMapping("/api")
+@Validated
+public interface DocumentGroupController {
 
-    private final DocumentGroupRepo documentGroupRepo;
-    private final DocumentGroupService documentGroupService;
-    private final DocumentService documentService;
+    @Operation(summary = "Get the document list")
+    @GetMapping("/documentGroup/all")
+    List<DocumentGroupWithGroupsDto> findAll();
 
+    @Operation(summary = "Create a subgroup of documents")
+    @PostMapping("/protected/documentGroup/new")
+    DocumentGroupWithGroupsDtoAndDocumentsDto createNewSubGroup(@RequestParam(required = false) Long groupId, @NotBlank @RequestParam String name);
 
-    @Override
-    public List<DocumentGroupWithGroupsDto> findAll() {
-        return documentGroupRepo.findDistinctByDocumentGroupIdOrderByCreatedOn(null);
-    }
+    @Operation(summary = "Edit a subgroup of documents")
+    @PutMapping("/protected/documentGroup/{id}/update")
+    Long editSubGroup(@PathVariable Long id, @NotBlank @RequestParam String name);
 
-    @Override
-    public DocumentGroupWithGroupsDtoAndDocumentsDto createNewSubGroup(Long groupId, String name) {
+    @Operation(summary = "Delete a subgroup of documents")
+    @DeleteMapping("/protected/documentGroup/{id}/delete")
+    Long deleteSubGroup(@PathVariable Long id);
 
-        DocumentGroup documentGroup = DocumentGroup.builder().documentGroup(groupId == null ? null : documentGroupRepo.getReferenceById(groupId)).name(name).build();
-        DocumentGroup saved = documentGroupRepo.save(documentGroup);
-        return documentGroupRepo.findDistinctById(saved.getId()).orElseThrow(EntityNotFoundException::new);
-    }
+    @Operation(summary = "Create a new document")
+    @PostMapping("/protected/documentGroup/{id}/document/new")
+    Document newDoc(@PathVariable Long id, @RequestParam MultipartFile file, @RequestParam String title);
 
-    @Override
-    public Long editSubGroup(Long id, String name) {
-        DocumentGroup group = documentGroupRepo.findById(id).orElseThrow(EntityNotFoundException::new);
-        group.setName(name);
-        documentGroupRepo.save(group);
-        return group.getId();
-    }
-
-    @Override
-    public Long deleteSubGroup(Long id) {
-        log.info("delete = {}", id);
-        documentGroupService.deleteById(id);
-        return id;
-    }
-
-    @Override
-    public Document newDoc(Long id, MultipartFile file, String title) {
-        log.info("new doc = {}, size - {}, title = {}", file.getOriginalFilename(), file.getSize(), title);
-        return documentService.saveDocument(id, file, title);
-    }
-
-    @Override
-    public DocumentGroupWithGroupsDtoAndDocumentsDto findById(Long id) {
-        return documentGroupRepo.findDistinctById(id).orElseThrow(DocumentGroupNotFoundException::new);
-    }
+    @Operation(summary = "Find document group by id")
+    @GetMapping("/documentGroup/id/{id}")
+    DocumentGroupWithGroupsDtoAndDocumentsDto findById(@PathVariable Long id);
 }
