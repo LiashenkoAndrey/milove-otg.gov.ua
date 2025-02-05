@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +36,7 @@ public interface LinkBannerController {
       security = @SecurityRequirement(name = "Requires an admin rights")
   )
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Banner added successfully"),
+      @ApiResponse(responseCode = "201", description = "Banner added successfully"),
       @ApiResponse(responseCode = "401", description = "Authentication issue"),
       @ApiResponse(responseCode = "422",
           description = "Field validation failed. One or several do not meet the conditions"),
@@ -66,12 +65,12 @@ public interface LinkBannerController {
   )
   @ApiResponses(value = {
       @ApiResponse(
-          responseCode = "200",
+          responseCode = "204",
           description = "Banner deleted successfully"
       ),
       @ApiResponse(responseCode = "401", description = "Authentication issue"),
       @ApiResponse(responseCode = "404", description = "Banner with provided id not found"),
       @ApiResponse(responseCode = "400", description = "Invalid id type provided, in must be int")
   })
-  ResponseEntity<?> delete(@Pattern(regexp = "\\d+") Long id);
+  ResponseEntity<?> delete(Long id);
 }

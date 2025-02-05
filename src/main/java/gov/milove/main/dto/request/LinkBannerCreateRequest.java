@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.URL;
 import org.springframework.lang.NonNull;
 
 public record LinkBannerCreateRequest (
-    @NonNull @URL
+    @NotBlank @URL
     String url,
     @NotBlank @Size(min = 3)
     String text

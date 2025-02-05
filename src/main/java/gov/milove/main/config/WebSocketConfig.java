@@ -32,11 +32,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins("http://localhost:3000", "https://miloverada.gov.ua").withSockJS();
     }
 
-    @Bean
-    public ServletServerContainerFactoryBean createServletServerContainerFactoryBean() {
-        ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-        container.setMaxTextMessageBufferSize(9999999);
-        container.setMaxBinaryMessageBufferSize(9999999);
-        return container;
-    }
+
 }

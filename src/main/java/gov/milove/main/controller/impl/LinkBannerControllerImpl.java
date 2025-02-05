@@ -54,7 +54,7 @@ public class LinkBannerControllerImpl implements LinkBannerController {
         LinkBanner linkBanner = linkBannerService.update(request);
 
         return new ResponseEntity<>(linkBannerMapper.toLinkBannerDto(linkBanner),
-            HttpStatus.NO_CONTENT);
+            HttpStatus.OK);
     }
 
     @Override
