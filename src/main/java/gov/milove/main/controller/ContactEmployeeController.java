@@ -26,7 +26,7 @@ public class ContactEmployeeController {
         return employee;
     }
 
-    @PostMapping("/contact/update")
+    @PostMapping("/protected/contact/update")
     public Long update(
             @RequestParam("id") Long id,
             @RequestBody ContactEmployee updatedEmployee) {

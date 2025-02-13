@@ -1,5 +1,7 @@
 package gov.milove.main.controller.integrationtest;
 
+import static gov.milove.main.constants.Constants.CONTENT_MANAGER_ROLE;
+import static gov.milove.testdata.AuhenticationTestData.PROTECTED_API;
 import static gov.milove.testdata.LinkBannerTestData.LINK_BANNER_FOR_DELETION_ID;
 import static gov.milove.testdata.LinkBannerTestData.LINK_BANNER_ID;
 import static org.hamcrest.Matchers.hasSize;
@@ -29,10 +31,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
 @Log4j2
 @Sql({"classpath:/testdata/link-banner-test-data.sql"})
 @DisplayName("Link banner controller integration test")
@@ -64,19 +66,21 @@ class LinkBannerControllerIntegrationTest extends IntegrationTest {
 
   @Nested
   @DisplayName("Add link banner")
+  @WithMockUser(roles = CONTENT_MANAGER_ROLE, username = "user123")
   class AddLinkBanner {
 
     @Test
     @DisplayName("Should save link banner when valid params provided")
     void addBanner_shouldSave_whenValidParams() throws Exception {
 
+
       var request = new LinkBannerCreateRequest("https://www.linkedin.com", "Some text");
       String content = objectMapper.writeValueAsString(request);
 
-      MvcResult result = mockMvc.perform(post("/api/link-banners")
+      MvcResult result = mockMvc.perform(post(PROTECTED_API + "/link-banners")
               .contentType(MediaType.APPLICATION_JSON)
-              .content(content))
-          .andExpectAll(
+              .content(content)
+          )  .andExpectAll(
               status().isCreated(),
               jsonPath("$.id").isNumber(),
               jsonPath("$.createdOn").isNotEmpty(),
@@ -97,7 +101,7 @@ class LinkBannerControllerIntegrationTest extends IntegrationTest {
       var request = new LinkBannerCreateRequest(url, text);
       String content = objectMapper.writeValueAsString(request);
 
-      mockMvc.perform(post("/api/link-banners")
+      mockMvc.perform(post(PROTECTED_API + "/link-banners")
               .contentType(MediaType.APPLICATION_JSON)
               .content(content))
           .andExpect(status().isBadRequest());
@@ -119,6 +123,7 @@ class LinkBannerControllerIntegrationTest extends IntegrationTest {
 
   @Nested
   @DisplayName("Fully update link banner")
+  @WithMockUser(roles = CONTENT_MANAGER_ROLE, username = "user123")
   class UpdateLinkBanner {
 
     @Test
@@ -130,7 +135,7 @@ class LinkBannerControllerIntegrationTest extends IntegrationTest {
 
       String content = objectMapper.writeValueAsString(request);
 
-      mockMvc.perform(put("/api/link-banners")
+      mockMvc.perform(put(PROTECTED_API + "/link-banners")
           .contentType(MediaType.APPLICATION_JSON)
           .content(content)
       ).andExpectAll(
@@ -152,7 +157,7 @@ class LinkBannerControllerIntegrationTest extends IntegrationTest {
 
       String content = objectMapper.writeValueAsString(request);
 
-      mockMvc.perform(put("/api/link-banners")
+      mockMvc.perform(put(PROTECTED_API + "/link-banners")
               .contentType(MediaType.APPLICATION_JSON)
               .content(content))
           .andExpect(status().isBadRequest());
@@ -161,6 +166,7 @@ class LinkBannerControllerIntegrationTest extends IntegrationTest {
 
   @Nested
   @DisplayName("Delete link banner")
+  @WithMockUser(roles = CONTENT_MANAGER_ROLE, username = "user123")
   class DeleteLinkBanner {
 
     @Test
@@ -168,7 +174,7 @@ class LinkBannerControllerIntegrationTest extends IntegrationTest {
     void shouldReturn204_whenDeleted() throws Exception {
       assertTrue(linkBannerRepository.existsById(LINK_BANNER_FOR_DELETION_ID));
 
-      mockMvc.perform(delete("/api/link-banners/" + LINK_BANNER_FOR_DELETION_ID))
+      mockMvc.perform(delete(PROTECTED_API + "/link-banners/" + LINK_BANNER_FOR_DELETION_ID))
           .andExpect(status().isNoContent());
 
       assertFalse(linkBannerRepository.existsById(LINK_BANNER_FOR_DELETION_ID));
@@ -177,14 +183,14 @@ class LinkBannerControllerIntegrationTest extends IntegrationTest {
     @Test
     @DisplayName("Should return 404 (not found) when no banner with provided id")
     void shouldReturn404_whenNotFound() throws Exception {
-      mockMvc.perform(delete("/api/link-banners/623"))
+      mockMvc.perform(delete(PROTECTED_API + "/link-banners/623"))
           .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Should return 400 (bad request) when invalid id format (text)")
     void shouldReturn400_whenInvalidId() throws Exception {
-      mockMvc.perform(delete("/api/link-banners/invalid"))
+      mockMvc.perform(delete(PROTECTED_API + "/link-banners/invalid"))
           .andExpect(status().isBadRequest());
     }
   }

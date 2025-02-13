@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.validation.annotation.Validated;
 
 @Tag(
@@ -42,7 +44,7 @@ public interface LinkBannerController {
           description = "Field validation failed. One or several do not meet the conditions"),
       @ApiResponse(responseCode = "400", description = "Invalid body provided")
   })
-  ResponseEntity<LinkBannerDto> addBanner(@Valid LinkBannerCreateRequest request);
+  ResponseEntity<LinkBannerDto> addBanner(@Valid LinkBannerCreateRequest request, Principal user);
 
   @Operation(
       summary = "Fully updates link banner",

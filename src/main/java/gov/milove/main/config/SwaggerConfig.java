@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,6 +38,22 @@ public class SwaggerConfig {
                 .email("a.liashenko@e-u.edu.ua")
                 .url("https://github.com/LiashenkoAndrey/miloverada.gov.ua")
             )
+        )
+        .addServersItem(new Server()
+            .url("http://localhost:6060")
+            .description("Local development server for the main module")
+        )
+        .addServersItem(new Server()
+            .url("http://localhost:6060")
+            .description("Local development server for the forum module")
+        )
+        .addServersItem(new Server()
+            .url("https://api.miloverada.gov.ua")
+            .description("Production server for the main module")
+        )
+        .addServersItem(new Server()
+            .url("https://api.miloverada.gov.ua")
+            .description("Production server for the forum module")
         );
   }
 

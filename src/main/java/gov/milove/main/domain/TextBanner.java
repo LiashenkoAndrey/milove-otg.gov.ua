@@ -24,10 +24,4 @@ public class TextBanner extends Banner {
     @Size(max = 40000)
     private String mainText;
 
-    @Builder
-    public TextBanner(Long id, LocalDate createdOn, LocalDateTime lastUpdated, String description, String mainText) {
-        super(id, createdOn, lastUpdated);
-        this.description = description;
-        this.mainText = mainText;
-    }
 }

@@ -7,14 +7,17 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 @TestConfiguration
 @EnableAutoConfiguration
 @Log4j2
 public class TestConfig {
+
 
   @Bean
   @ServiceConnection(name = "postgres")
