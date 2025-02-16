@@ -1,6 +1,8 @@
 package gov.milove.main.config.security;
 
 
+import static gov.milove.main.constants.Constants.CONTENT_MANAGER_ROLE;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +24,9 @@ public class SecurityConfig {
     public SecurityFilterChain httpSecurity(final HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/protected/**", "/api/admin/**").authenticated()
+                        .requestMatchers(
+                            "/api/protected/**"
+                        ).hasRole(CONTENT_MANAGER_ROLE)
                         .anyRequest().permitAll())
                 .csrf().disable()
                 .cors(Customizer.withDefaults())

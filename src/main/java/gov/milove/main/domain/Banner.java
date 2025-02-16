@@ -26,4 +26,8 @@ public abstract class Banner {
 
     @UpdateTimestamp
     protected LocalDateTime lastUpdated;
+
+    @ManyToOne
+    @JoinColumn(name = "added_by")
+    protected AppUser addedBy;
 }

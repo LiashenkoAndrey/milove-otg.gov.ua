@@ -1,0 +1,10 @@
+POSTGRES_CONTAINER_VERSION: postgres:15.8-alpine
+POSTGRES_CONTAINER_USERNAME: postgres
+POSTGRES_CONTAINER_PASSWORD: postgres
+
+logging:
+  level:
+    root: INFO # Set the root logging level to INFO
+    gov.milove: INFO # Set a specific package to DEBUG level (optional)
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm} [%X{traceId}] %-5level %logger{36} - %msg%n"
