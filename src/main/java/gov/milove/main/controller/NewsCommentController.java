@@ -1,73 +1,26 @@
 package gov.milove.main.controller;
 
-
 import gov.milove.main.domain.NewsComment;
-import gov.milove.main.domain.NewsCommenter;
-import gov.milove.main.domain.User;
 import gov.milove.main.dto.NewCommentDto;
-import gov.milove.main.repository.jpa.AppUserRepo;
-import gov.milove.main.repository.jpa.NewsCommentRepo;
-import gov.milove.main.repository.jpa.NewsCommenterRepo;
-import gov.milove.main.util.Util;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
-@RestController
-@Log4j2
+@Tag(name = "News comment controller")
 @RequestMapping("/api")
-@RequiredArgsConstructor
-public class NewsCommentController {
+public interface NewsCommentController {
 
-    private final AppUserRepo appUserRepo;
-    private final NewsCommentRepo commentRepo;
-    private final NewsCommenterRepo newsCommenterRepo;
-
+    @Operation(summary = "Get the news comment list")
     @GetMapping("/news/{newsId}/comments")
-    public List<NewsComment> getComments(@PathVariable Long newsId) {
-        return commentRepo.findAllByNewsIdOrderByCreatedOnDesc(newsId);
-    }
+    List<NewsComment> getComments(@PathVariable Long newsId);
 
+    @Operation(summary = "Create a new comment")
     @PostMapping("/news/comment/new")
-    public NewsComment newComment(@RequestBody NewCommentDto dto) {
-        String appUserId =  Util.decodeUriComponent(dto.getAppUserId());
-        log.info("new comment, newsId = {}, appUserId = {}, newsCommenter = {}, commentId = {}, text = {}", dto.getNewsId(), appUserId, dto.getNewsCommenter(), dto.getCommentId(), dto.getText());
-        User author;
+    NewsComment newComment(@RequestBody NewCommentDto dto);
 
-        if (appUserId == null) {
-            if (dto.getNewsCommenter() == null) throw new IllegalArgumentException("authorId or newCommenter is not present");
-            NewsCommenter dtoCommenter = dto.getNewsCommenter();
-            dtoCommenter.setId(UUID.randomUUID().toString());
-            NewsCommenter savedCommenter = newsCommenterRepo.save(dtoCommenter);
-            log.info("saved commenter = {}", savedCommenter);
-            author = savedCommenter;
-        } else {
-            log.info("user is registered, id = {}", appUserId);
-            author = appUserRepo.getReferenceById(appUserId);
-        }
-        log.info("author = {}", author);
-
-        if ((dto.getNewsId() == null && dto.getCommentId() == null) || (dto.getNewsId() != null && dto.getCommentId() != null))
-            throw new IllegalArgumentException("It needs to send only a newsId or a comment id");
-
-        NewsComment comment = NewsComment.builder()
-                .author(author)
-                .newsId(dto.getNewsId())
-                .commentId(dto.getCommentId())
-                .text(dto.getText())
-                .build();
-        NewsComment saved = commentRepo.save(comment);
-        log.info("saved comment {}", saved);
-        return saved;
-    }
-
+    @Operation(summary = "Delete a comment")
     @DeleteMapping("/protected/news/comment/{id}/delete")
-    public Long delete(@PathVariable Long id) {
-        commentRepo.deleteById(id);
-        return id;
-    }
-
+    Long delete(@PathVariable Long id);
 }

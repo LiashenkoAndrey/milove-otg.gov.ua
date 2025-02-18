@@ -45,7 +45,7 @@ public class NewsDtoWithImageAndType {
                         ).fields(
                                 "created",
                                 "created",
-                                customConverter("gov.milove.util.StringToLocalDateConverter")
+                                customConverter("gov.milove.main.util.StringToLocalDateConverter")
                         ).exclude("news_type_id");
                     }
                 })

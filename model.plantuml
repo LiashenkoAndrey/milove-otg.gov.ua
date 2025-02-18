@@ -1,0 +1,95 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+skinparam padding 10
+
+class User {
+    +email: String
+    +id: String
+    +firstName: String
+}
+
+class AppUser {
+    +avatarUrl: String
+    +lastName: String
+    +avatarBase64Image: String
+    +registeredOn: LocalDateTime
+    +avatarContentType: String
+}
+AppUser -[#000082,plain]-^ User
+
+class Banner {
+    +createdOn: LocalDate
+    +id: Long
+    +lastUpdated: LocalDateTime
+}
+
+class LinkBanner {
+    +text: String
+    +url: String
+}
+LinkBanner -[#000082,plain]-^ Banner
+
+class TextBanner {
+    +description: String
+    +mainText: String
+}
+TextBanner -[#000082,plain]-^ Banner
+
+class Document {
+    +mongoId: String
+    +name: String
+    +title: String
+    +id: Long
+    +hashCode: Integer
+    +createdOn: LocalDateTime
+}
+
+class DocumentGroup {
+    +name: String
+    +id: Long
+    +createdOn: Date
+}
+Document "1" *-[#595959,plain]-> "documentGroup\n1" DocumentGroup
+DocumentGroup "1" *-[#595959,plain]-> "documents\n*" Document
+
+class News {
+    +commentsAmount: Long
+    +description: String
+    +id: Long
+    +newsType: NewsType
+    +views: Long
+    +main_text: String
+    +dateOfPublication: LocalDateTime
+    +last_updated: LocalDateTime
+}
+
+class NewsComment {
+    +newsId: Long
+    +id: Long
+    +createdOn: LocalDateTime
+    +editedOn: LocalDateTime
+    +text: String
+    +commentId: Long
+}
+NewsComment "1" *-[#595959,plain]-> "author\n1" User
+
+class NewsType {
+    +titleExplanation: String
+    +id: Long
+    +title: String
+}
+News "1" *-[#595959,plain]-> "newsType\n1" NewsType
+
+class Notification {
+    +text: String
+    +id: Long
+    +createdOn: Date
+    +message: String
+    +updatedOn: Date
+}
+Notification "1" *-[#595959,plain]-> "author\n1" AppUser
+
+@enduml
