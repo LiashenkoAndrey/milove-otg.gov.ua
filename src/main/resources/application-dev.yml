@@ -1,6 +1,6 @@
 spring:
   config:
-    import: "optional:application-dev-environment.properties"
+    import: "application-dev-environment.yml"
 
   flyway:
     user: ${postgres_username}
